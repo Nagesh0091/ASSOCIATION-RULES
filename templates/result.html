@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Apriori Rules Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        .rule-card {
+            transition: box-shadow 0.3s ease;
+        }
+        .rule-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">Apriori Rule Miner</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="mb-4 text-center">
+        <h2 class="mb-3">Association Rules</h2>
+        <form method="POST" action="/search" class="d-flex justify-content-center mb-3">
+            <input type="text" name="product" class="form-control w-50 me-2" placeholder="Search rules by product..." required />
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+        </form>
+
+        <!-- Explanation box -->
+        <div class="alert alert-info mb-4" role="alert">
+          <h5 class="mb-3">Understanding the Metrics:</h5>
+          <ul class="text-start">
+            <li><strong>Support:</strong> Proportion of transactions containing the itemset. It measures how frequently the itemset appears in the dataset.</li>
+            <li><strong>Confidence:</strong> How often items in the consequent appear in transactions that contain the antecedent. It measures the reliability of the rule.</li>
+            <li><strong>Lift:</strong> Ratio of the observed support to that expected if antecedent and consequent were independent. Lift &gt; 1 means positive correlation.</li>
+          </ul>
+        </div>
+    </div>
+
+
+    {% if rules|length == 0 %}
+        <div class="alert alert-warning text-center" role="alert">
+            No rules found.
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for rule in rules %}
+            <div class="col">
+                <div class="card rule-card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            {{ rule['antecedents'] | safe }} &rarr; {{ rule['consequents'] | safe }}
+                        </h5>
+                        <p class="card-text mb-1"><strong>Support:</strong> {{ '%.3f'|format(rule['support']) }}</p>
+                        <p class="card-text mb-1"><strong>Confidence:</strong> {{ '%.3f'|format(rule['confidence']) }}</p>
+                        <p class="card-text mb-1"><strong>Lift:</strong> {{ '%.3f'|format(rule['lift']) }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-5">
+        <a href="/" class="btn btn-secondary">Upload New Data</a>
+    </div>
+</div>
+
+<footer class="text-center mt-5 mb-3 text-muted">
+    &copy; 2025 Apriori Rule Miner
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
